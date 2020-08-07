@@ -481,7 +481,7 @@
  <br/>
 
  <p id="assetId"></p>
-
+ <h3 style="text-align: center; margin-top: 20px;">Asset Requisition List View</h3>
  <form class="container-fluid bg-gray">
  <div class="form-row mb-4 col-10 mx-auto">
  <div class="col form-inline" >
@@ -594,7 +594,7 @@
  
 
  <div class="modal-footer">
- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+ <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
  <button type="submit" id="assetRequisitionSubmitbutton" class="btn btn-primary">Save</button>
  </div>
 
@@ -632,7 +632,7 @@
  </div>
  <div class="modal-footer">
  <button type="button" class="btn btn-primary" id="submitForApproval" >Submit</button>
- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+ <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
  </div>
  </div>
  </div>
@@ -646,6 +646,7 @@
  <table class="table">
  <thead>
  <tr>
+  <th>Edit Action</th>
  <th>Asset Requisition Name</th>
  <th>Project Name </th>
  <th>Number of IT Product</th>
@@ -655,15 +656,15 @@
  <th>Total Amount</th>
  <th>Approval</th>
  <th>Accounts Approval</th>
- <th>Edit Action</th>
  </tr>
  </thead>
  <tbody>
  <% if(assetList.length > 0) { %>
  <% assetList.forEach(function(eachAsset) { %>
  <tr>
+  <td><button class="btn btn-primary assetRequisitionEditModalButton" id="<%= eachAsset.sfid %>" >Edit</button></td>
  <td><a href="<%= eachAsset.sfid %>" data-toggle="modal" data-target="#popup" class="assetId" id="" ><%= eachAsset.name %></a></td>
- <td>Project 6</td>
+ <td><%= eachAsset.projname %></td>
  <td><%= eachAsset.number_of_it_product__c %></td>
  <td><%= eachAsset.number_of_non_it_product__c %></td>
  <td><%= eachAsset.procurement_it_total_amount__c %></td>
@@ -671,7 +672,6 @@
  <td><%= eachAsset.total_amount__c %></td>
  <td><button class="btn btn-primary approvalCommentModalButton" id="<%= eachAsset.sfid %>" >Approval</button></td>
  <td><button class="btn btn-primary approvalAccountsCommentModalButton" id="<%= eachAsset.sfid %>" >Accounts Approval</button></td>
- <td><button class="btn btn-primary assetRequisitionEditModalButton" id="<%= eachAsset.sfid %>" >Edit</button></td>
  </tr>
  <% }) %>
  <% }%>
@@ -842,7 +842,7 @@
 
  <!-- Modal footer -->
  <div class="modal-footer">
- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+ <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
  </div>
 
  </div>
@@ -1070,7 +1070,7 @@
 
  <div class="modal-footer">
  <button type="submit" class="btn btn-primary" id="editassetForm" data-dismiss="modal">Save</button>
- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+ <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
  </div>
  </form>
  </div>
@@ -1106,7 +1106,7 @@
  
  <div class="modal-footer">
  <button type="submit" class="btn btn-primary" id="uploadattachmentBuuton" data-dismiss="modal">Save</button>
- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+ <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
  </div>
  </form>
  </div>

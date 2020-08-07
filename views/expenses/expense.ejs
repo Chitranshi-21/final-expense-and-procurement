@@ -6,10 +6,7 @@
 
 
 <style>
-
-   
-
-
+  
       .project-tab {
           padding: 10%;
           margin-top: -8%;
@@ -108,9 +105,11 @@
 
     
   </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <div class="container-fluid bg-gray" id="accordion-style-1">
       <p id="expenseIdpTag"> </p>
+      <h3 style="text-align: center; margin-top: 20px;">Expense List View</h3>
   <div class="container">
       <div id="success" class="alert alert-success alert-dismissible fade show" role="alert">
  
@@ -122,10 +121,10 @@
             <div class="row mt-6 mb-3 align-items-center">
                       <div class="col-md-5">
                           <button class="btn btn-primary btn-md bg-gray"  id="createNewExpenseButton">Create New Expense</button>
-                          <button class="btn btn-primary btn-md" id="refresh">Refresh</button>
+                        <i class="fa fa-refresh" aria-hidden="true" id="refresh"  style="font-size:34px; margin-left: 10px; margin-top: 30px;"></i> 
                       </div>
                       <div class="col-md-3">
-                        <input type="text" class="form-control" placeholder="Search in table..." id="searchField">
+                        <input type="text" class="form-control" placeholder="Search" id="searchField">
                       </div>
                       <div class="col-md-2 text-right">
                         <span class="pr-3">Rows Per Page:</span>
@@ -133,7 +132,6 @@
                       <div class="col-md-2">
                           <div class="d-flex justify-content-end">
                               <select class="custom-select" name="rowsPerPage" id="changeRows">
-                                  <option value="1">1</option>
                                   <option value="5" selected>5</option>
                                   <option value="10">10</option>
                                   <option value="15">15</option>
@@ -273,7 +271,7 @@
 
                               <!-- Modal footer -->
                               <div class="modal-footer">
-                                  <button type="button" class="btn btn-secondary"
+                                  <button type="button" class="btn btn-danger"
                                       data-dismiss="modal">Close</button>
                               </div>
 
@@ -307,9 +305,9 @@
                   </div>
                   
                   <div class="col-md-6">
-                    <label for="projectNameDropDown">Project Name</label>
-                    <select class="custom-select custom-select-sm form-control" id="projectNameDropDown" name="projectname">
-                        <option selected value="a030p0000018ScOAAU" >Project 6</option>
+                    <label for="proj">Project Name</label>
+                    <select class="custom-select custom-select-sm form-control" id="proj" name="proj">
+                        <option selected value="" ></option>
                     </select>
                   </div>
                 </div>
@@ -346,7 +344,7 @@
               </div>
   
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                 <button type="submit" id="expenseSubmitbutton"  class="btn btn-primary">Save</button>
               </div>
   
@@ -424,7 +422,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" onclick="printDiv('printExpensediv')" value="Click to print!" >click to Print</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -456,7 +454,7 @@
         </div>   
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
             <button type="submit" id="expenseSubmitbutton"  class="btn btn-primary">Save</button>
           </div>
 
@@ -495,7 +493,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" id="submitForApproval" >Submit</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -531,7 +529,7 @@
         </div>   
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
             <button type="submit" id="tourBillClaimSubmitbutton"  class="btn btn-primary">Save</button>
           </div>
 
@@ -571,6 +569,7 @@
 
         let columns = {
           sequence: 'Sr No.',
+          editButton : 'Action',
           name: 'Expense Name',
           projectName: 'Project Name',
           approvalStatus: 'Reporting Manager Status',
@@ -579,8 +578,7 @@
           conveyanceVoucherAmount: 'Conveyance Voucher Amount' ,
           tourBillAmount: 'Tour Bill Amount', */
           createdDate : 'Created Date', 
-          editButton : 'Action',
-          approvalButton : 'Approval',
+          approvalButton : 'Submit for Approval',
           print : 'Print Expense',
         }
 
@@ -705,7 +703,31 @@
         });  */
 
         $('#createNewExpenseButton').click(() =>{
-              $('#createExpenseModal').modal('show');
+          $.ajax({
+      url : '/expense/fetchProjectforCreateNew',
+      data : {
+         
+      },
+      dataType : 'json',
+      type : 'get'
+  })
+  .done((response) => {
+      console.log('response  '+JSON.stringify(response));
+      if(response.length > 0)
+          {
+          response.forEach((eachProject) => {
+          console.log('eachProject.name '+eachProject.name);
+          $('#proj')
+          .append($("<option></option>")
+          .attr("value",eachProject.sfid)
+          .text(eachProject.name))
+          }); 
+          }
+  })
+  .fail((jqXHR,text,err) => {
+      console.log('text  '+text + '  err '+err);
+  })
+   $('#createExpenseModal').modal('show');
         })
 
 
@@ -745,7 +767,7 @@
               expenseTableRows += '<td><strong>Expense Name<strong></td>';
               expenseTableRows += '<td>'+expenseRecord.name+'</td>';
               expenseTableRows += '<td><strong>Project Name<strong></td>';
-              expenseTableRows += '<td>Project 6</td>';
+              expenseTableRows += '<td>'+expenseRecord.projname+'</td>';
               expenseTableRows += '</tr>';   
               
               expenseTableRows += '<tr>';
@@ -976,7 +998,7 @@
                   {
                     projectList.forEach((eachProject) =>
                     {
-                      if(eachProject.sfid == expenseDetails.project_name__c)
+                      if(eachProject.sfid == expenseDetails.projId)
                           projectOptionsHtml += '<option selected value="'+eachProject.sfid+'">'+eachProject.name+'</option>';
                       else
                           projectOptionsHtml += '<option value="'+eachProject.sfid+'">'+eachProject.name+'</option>'; 
@@ -1047,7 +1069,7 @@
                   '</div>'+
                   '<input type="hidden"  value="'+expenseDetails.sfid+'"  name="expenseId">' +
                   '<div class="modal-footer">'+
-                      '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>'+
+                      '<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>'+
                       '<button type="submit" id="expenseEditSubmitbutton"  class="btn btn-primary">Save</button>'+
                   '</div>'+
                   '</form>';
@@ -1180,7 +1202,7 @@ $('.printexp').on('click', function(event){
   expenseTableRows += '<td><strong>Expense Name<strong></td>';
   expenseTableRows += '<td>'+expenseRecord.name+'</td>';
   expenseTableRows += '<td><strong>Project Name<strong></td>';
-  expenseTableRows += '<td>Project 6</td>';
+  expenseTableRows += '<td>'+expenseRecord.projname+'</td>';
   expenseTableRows += '</tr>';   
   
   expenseTableRows += '<tr>';

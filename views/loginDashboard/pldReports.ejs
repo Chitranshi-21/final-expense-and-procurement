@@ -1,8 +1,8 @@
 <% include ../partials/navbar %>
 
 <% if(showExcelReport){ %>
-
-<div class="row mt-5">
+  <h3 style="text-align: center; margin-top: 20px;">PLD Forms</h3>
+  <div class="row mt-5">
         <div class="col-md-6 m-auto">
            <div class="card card-body">
                 <label for="validationTooltip03">Select Project</label>
@@ -68,7 +68,7 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
              
             </div>
           </div>
@@ -280,7 +280,17 @@
                   //alert($(this).attr('id')+' clicked!');
                 })
               }
-  
+              else  //If there are no pld form
+              {
+
+                let htmlTable = '';
+                htmlTable += '<thead><tr>';
+                htmlTable += '<th colspan="6">No Pld Form Found</th>';
+               
+                htmlTable += '</tr></thead>';
+                htmlTable += '<tbody>';
+                $('#pldTable').html(htmlTable);
+              }
              
           })
           .fail((jqXHR, status, error) => {

@@ -168,7 +168,7 @@ router.get('/expenseAllRecords',verify, async (request, response) => {
   console.log('objUser   : '+JSON.stringify(objUser));
 
   pool
-  .query('SELECT exp.id, exp.sfid, exp.Name , exp.isHerokuEditButtonDisabled__c, exp.Project_Name__c, exp.Approval_Status__c, exp.Amount_Claimed__c, exp.petty_cash_amount__c, exp.Conveyance_Amount__c, exp.createddate, pro.sfid as prosfid, pro.name as proname FROM salesforce.Milestone1_Expense__c as exp JOIN salesforce.Milestone1_Project__c as pro ON exp.Project_name__c = pro.sfid WHERE exp.Incurred_By_Heroku_User__c = $1 AND exp.sfid != \'\'',['0030p000009y3OzAAI'])
+  .query('SELECT exp.id, exp.sfid, exp.Name , exp.isHerokuEditButtonDisabled__c, exp.Project_Name__c, exp.Approval_Status__c, exp.Amount_Claimed__c, exp.petty_cash_amount__c, exp.Conveyance_Amount__c, exp.createddate, pro.sfid as prosfid, pro.name as proname FROM salesforce.Milestone1_Expense__c as exp JOIN salesforce.Milestone1_Project__c as pro ON exp.Project_name__c = pro.sfid WHERE exp.Incurred_By_Heroku_User__c = $1 AND exp.sfid != \'\'',[objUser.sfid])
   .then((expenseQueryResult) => {
       console.log('expenseQueryResult   : '+JSON.stringify(expenseQueryResult.rows));
           if(expenseQueryResult.rowCount > 0)
@@ -203,7 +203,7 @@ router.get('/expenseAllRecords',verify, async (request, response) => {
                   obj.editButton = '<button    data-toggle="modal" data-target="#popupEdit" class="btn btn-primary expIdEditMode"   id="edit'+expenseQueryResult.rows[i].sfid+'" >Edit</button>';
                 else
                   obj.editButton = '<button    data-toggle="modal" data-target="#popupEdit" class="btn btn-primary expIdEditMode"   id="edit'+expenseQueryResult.rows[i].sfid+'" >Edit</button>';
-                obj.approvalButton = '<button   class="btn btn-primary expIdApproval"  style="color:white;" id="'+expenseQueryResult.rows[i].sfid+'" >Submit For Approval</button>';
+                obj.approvalButton = '<button   class="btn btn-primary expIdApproval"  style="color:white;" id="'+expenseQueryResult.rows[i].sfid+'" >Approval</button>';
                 expenseList.push(obj);
                 /* disabled="'+expenseQueryResult.rows[i].isherokueditbuttondisabled__c+'" */
               }
@@ -225,22 +225,123 @@ router.get('/expenseAllRecords',verify, async (request, response) => {
 
 })
 
+router.get('/fetchProjectforCreateNew', verify ,(request, response) => 
+{
 
+      console.log('hello i am inside Expense Project');
+      console.log('Expense request.user '+JSON.stringify(request.user));
+      var userId = request.user.sfid; 
+      var projectName =''; 
+      pool
+      .query('SELECT sfid, Name FROM salesforce.Contact  WHERE sfid = $1;',[userId])
+      .then(contactResult => 
+        {
+          console.log('Name of Contact  :: '+contactResult.rows[0].name+' sfid'+contactResult.rows[0].sfid);
+          var contactId = contactResult.rows[0].sfid;                 
+          pool
+          .query('SELECT sfid, Name, Team__c FROM salesforce.Team_Member__c WHERE Representative__c = $1 ;',[contactId])
+          .then(teamMemberResult => 
+            {
+              console.log('Name of TeamMemberId  : '+teamMemberResult.rows[0].name+'   sfid :'+teamMemberResult.rows[0].sfid);
+              console.log('Team Id  : '+teamMemberResult.rows[0].team__c);
+              console.log('Number of Team Member '+teamMemberResult.rows.length);
+                var projectTeamparams = [], lstTeamId = [];
+                for(var i = 1; i <= teamMemberResult.rows.length; i++) 
+                 {
+                   projectTeamparams.push('$' + i);
+                  lstTeamId.push(teamMemberResult.rows[i-1].team__c);
+                  } 
+                var projectTeamQueryText = 'SELECT sfid, Name, Project__c FROM salesforce.Project_Team__c WHERE Team__c IN (' + projectTeamparams.join(',') + ')';
+                console.log('projectTeamQueryText '+projectTeamQueryText);
+                        
+                 pool
+                .query(projectTeamQueryText,lstTeamId)
+                .then((projectTeamResult) => 
+                   {
+                     console.log('projectTeam Reocrds Length '+projectTeamResult.rows.length);
+                      console.log('projectTeam Name '+projectTeamResult.rows[0].name);
+                
+                      var projectParams = [], lstProjectId = [];
+                      for(var i = 1; i <= projectTeamResult.rows.length; i++) 
+                        {
+                      projectParams.push('$' + i);
+                      lstProjectId.push(projectTeamResult.rows[i-1].project__c);
+                        } 
+                      console.log('lstProjectId  : '+lstProjectId);
+                      var projetQueryText = 'SELECT sfid, Name FROM salesforce.Milestone1_Project__c WHERE sfid IN ('+ projectParams.join(',')+ ')';
+                
+                        pool.
+                        query(projetQueryText, lstProjectId)
+                       .then((projectQueryResult) => 
+                         { 
+                          console.log('Number of Projects '+projectQueryResult.rows.length);
+                          console.log('Project sfid '+projectQueryResult.rows[0].sfid+ 'Project Name '+projectQueryResult.rows[0].name);
+                          var projectList = projectQueryResult.rows;
+                          var lstProjectId = [], projectParams = [];
+                          var j = 1;
+                          projectList.forEach((eachProject) => 
+                           {
+                            console.log('eachProject sfid : '+eachProject.sfid);
+                           lstProjectId.push(eachProject.sfid);
+                           projectParams.push('$'+ j);
+                           console.log('eachProject name : '+eachProject.name);
+                           j++;
+                            })
+                            response.send(projectQueryResult.rows);
+                          })
+                              .catch((projectQueryError) => 
+                               {
+                                console.log('projectQueryError '+projectQueryError.stack);
+                               })
+                             
+                          })
+                              .catch((projectTeamQueryError) =>
+                              {
+                                console.log('projectTeamQueryError : '+projectTeamQueryError.stack);
+                              })          
+                          })
+                              .catch((teamMemberQueryError) =>
+                              {
+                                 console.log('Error in team member query '+teamMemberQueryError.stack);
+                              })
+                  
+                        }) 
+                  
+                        .catch((contactQueryError) => 
+                          { 
+                            console.error('Error executing contact query', contactQueryError.stack);
+                          })
+                        });
+                   
+                  
+      
+/* Project Query
+                  pool
+                  .query('Select sfid , Name FROM salesforce.Milestone1_Project__c WHERE Incurred_By_Heroku_User__c = $1 AND sfid != \'\'',[objUser.sfid])
+                  .then((projectQueryResult) => {
+                    console.log('projectQueryResult  : '+JSON.stringify(projectQueryResult.rows));
+                    response.send(projectQueryResult.rows);
 
+                  })
+                  .catch((activityCodeQueryError) => {
+                    console.log('activityCodeQueryError  : '+activityCodeQueryError.stack);
+                    response.send([]);
+                  })
+*/
 router.post('/createExpense',(request, response) => {
 
    // var {expenseName, projectName} = request.body;
     console.log('request.body  '+JSON.stringify(request.body));
 
-   const {taskname,projectname ,department, empCategory, incurredBy} = request.body;
+   const {taskname,proj ,department, empCategory, incurredBy} = request.body;
    console.log('taskname  '+taskname);
-   console.log('projectname  '+projectname);
+   console.log('proj  '+proj);
    console.log('department  '+department);
    console.log('empCategory  '+empCategory);
    console.log('incurredBy  '+incurredBy);
 
    pool
-   .query('INSERT INTO salesforce.Milestone1_Expense__c (name,project_name__c,department__c,Conveyance_Employee_Category_Band__c,Incurred_By_Heroku_User__c) values ($1,$2,$3,$4,$5)',[taskname,projectname,department,empCategory,incurredBy])
+   .query('INSERT INTO salesforce.Milestone1_Expense__c (name,project_name__c,department__c,Conveyance_Employee_Category_Band__c,Incurred_By_Heroku_User__c) values ($1,$2,$3,$4,$5)',[taskname,proj,department,empCategory,incurredBy])
    .then((expenseInsertResult) => {     
             console.log('expenseInsertResult.rows '+JSON.stringify(expenseInsertResult.rows));
             response.send('Success');
@@ -262,10 +363,13 @@ router.get('/saved-expense-details',verify, async (request, response) => {
 
   let expenseId = request.query.expenseId;
   console.log('Hurrah expenseId '+expenseId);
-  let expenseQueryText = 'SELECT id,sfid,Name, Project_Name__c, Department__c, Designation__c, '+
-    'Conveyance_Employee_Category_Band__c,'+
-    'Approval_Status__c, Amount_Claimed__c, petty_cash_amount__c, Conveyance_Amount__c '+
-    'FROM salesforce.Milestone1_Expense__c WHERE sfid = $1';
+  let expenseQueryText = 'SELECT exp.id,exp.sfid,exp.Name, proj.name as projname, proj.sfid as projId, exp.Department__c, exp.Designation__c, '+
+    'exp.Conveyance_Employee_Category_Band__c,'+
+    'exp.Approval_Status__c, exp.Amount_Claimed__c, exp.petty_cash_amount__c, exp.Conveyance_Amount__c '+
+    'FROM salesforce.Milestone1_Expense__c exp '+
+    'INNER JOIN salesforce.Milestone1_Project__c proj '+
+    'ON exp.Project_Name__c =  proj.sfid '+  
+    'WHERE exp.sfid = $1';
 
   await
   pool
@@ -391,10 +495,12 @@ router.get('/details', async (request, response) => {
   var expenseId = request.query.expenseId;
   console.log('Hurrah expenseId '+expenseId);
 
-  var expenseQueryText = 'SELECT id,sfid,Name, Project_Name__c, Department__c, Designation__c, '+
-  ' Conveyance_Employee_Category_Band__c,Employee_ID__c, Project_Manager_Status__c, Accounts_Status__c , '+
-  'Approval_Status__c, Amount_Claimed__c, petty_cash_amount__c, Conveyance_Amount__c, Tour_Bill_Claim__c '+
-  'FROM salesforce.Milestone1_Expense__c WHERE sfid = $1';
+  var expenseQueryText = 'SELECT exp.id,exp.sfid,exp.Name, proj.name as projname, proj.sfid as projId, exp.Department__c, exp.Designation__c, '+
+  ' exp.Conveyance_Employee_Category_Band__c,exp.Employee_ID__c, exp.Project_Manager_Status__c, exp.Accounts_Status__c , '+
+  'exp.Approval_Status__c, exp.Amount_Claimed__c, exp.petty_cash_amount__c, exp.Conveyance_Amount__c, exp.Tour_Bill_Claim__c FROM salesforce.Milestone1_Expense__c exp '+
+  'INNER JOIN salesforce.Milestone1_Project__c proj '+
+  'ON exp.Project_Name__c =  proj.sfid '+
+  'WHERE exp.sfid = $1';
 
 
   var pettyCashQueryText = 'SELECT id, sfid, name, Activity_Code__c, Bill_No__c, Bill_Date__c,Nature_of_exp__c, Amount__c FROM salesforce.Petty_Cash_Expense__c WHERE Expense__c = $1';
@@ -454,10 +560,12 @@ router.get('/printdetails',async(request,response)=>{
     var boardinglodgingQuery='';
     var telephoneFoodQuery='';
     var miscellaneousQuery='';
-    var expenseQueryText = 'SELECT id,sfid,Name, Project_Name__c, Department__c, Designation__c, '+
-    ' Conveyance_Employee_Category_Band__c,Employee_ID__c, Project_Manager_Status__c, Accounts_Status__c , '+
-    'Approval_Status__c, Amount_Claimed__c, petty_cash_amount__c, Conveyance_Amount__c, Tour_Bill_Claim__c '+
-    'FROM salesforce.Milestone1_Expense__c WHERE sfid = $1';
+    var expenseQueryText = 'SELECT exp.id,exp.sfid,exp.Name, proj.name as projname, proj.sfid as projId, exp.Department__c, exp.Designation__c, '+
+    ' exp.Conveyance_Employee_Category_Band__c,exp.Employee_ID__c, exp.Project_Manager_Status__c, exp.Accounts_Status__c , '+
+    'exp.Approval_Status__c, exp.Amount_Claimed__c, exp.petty_cash_amount__c, exp.Conveyance_Amount__c, exp.Tour_Bill_Claim__c FROM salesforce.Milestone1_Expense__c exp '+
+    'INNER JOIN salesforce.Milestone1_Project__c proj '+
+    'ON exp.Project_Name__c =  proj.sfid '+  
+    'WHERE exp.sfid = $1';
      var pettyCashQueryText = 'SELECT petty.sfid as sfid, petty.name as name, petty.Activity_Code_Project__c, petty.Bill_No__c,act.name as actname, petty.Bill_Date__c,petty.Nature_of_exp__c, petty.Amount__c '+
     'FROM salesforce.Petty_Cash_Expense__c petty '+
     'INNER JOIN salesforce.Activity_Code__c act ON petty.Activity_Code_Project__c = act.sfid '+

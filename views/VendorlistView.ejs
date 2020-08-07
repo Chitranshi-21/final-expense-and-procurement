@@ -3,16 +3,17 @@
 <% include ./partials/messages %>
 <link rel="stylesheet" href="/stylesheets/table-sortable.css">
 <script src="/scripts/table-sortable.js" ></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-<h4 style="text-align: center;">Impaneled Vendor LIST VIEW</h4>
+<h3 style="text-align: center; margin-top: 20px;">Impaneled Vendor List View</h3>
 <div class="container">
     <div class="row mt-5 mb-3 align-items-center">
         <div class="col-md-5">
             <a class="btn btn-primary btn-md bg-gray" href="/procurement/createvendor" id="createNewVendor">Create New  Vendor</a>
-            <a class="btn btn-primary btn-md bg-gray" href="/procurement/getvendorListView" >Refresh</a>
-        </div>
+            <a  href="/procurement/getvendorListView" style=" color: HEX #2c293d ;" id="ref" ><i class="fa fa-refresh" style="font-size:34px; margin-left: 10px; margin-top: 30px;"></i> </a>
+               </div>
         <div class="col-md-3">
-        <input type="text" class="form-control" placeholder="Search in table..." id="searchField">
+        <input type="text" class="form-control" placeholder="Search" id="searchField">
         </div>
         <div class="col-md-2 text-right">
         <span class="pr-3">Rows Per Page:</span>
@@ -20,7 +21,6 @@
         <div class="col-md-2">
             <div class="d-flex justify-content-end">
                 <select class="custom-select" name="rowsPerPage" id="changeRows">
-                    <option value="1">1</option>
                     <option value="5" selected>5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
@@ -156,7 +156,7 @@
               </div>
               <div class="modal-footer">
                   <button type="submit" class="btn btn-primary" id="editVendorButton" data-dismiss="modal">Save</button>
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
               </div>
             </form>
           </div>
@@ -238,7 +238,7 @@
 
             <!-- Modal footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
             </div>
 
         </div>
@@ -255,12 +255,12 @@
     $(document).ready(function(){
         let columns ={
             sequence : 'Sequence',
+            editAction:'Action',
             name: ' Impaneled Vendor ID',
             state:'State',
             district:' District',
             vendorname: 'Vendor Name',
-            add:'Address',
-            editAction:'Action',
+            add:'Address'
         }
         var table = $('#vendorListViewTable').tableSortable({
             data :[],

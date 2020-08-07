@@ -14,9 +14,13 @@ router.get('/',verify,(request, response)=> {
     var userId = request.user.sfid; 
     var objUser = request.user;
     console.log('Procurement userId : '+userId);
+    let qry ='SELECT asset.sfid, asset.Name, proj.name as projname, proj.sfid as projId, asset.Approval_Status__c, asset.Number_Of_IT_Product__c, asset.Number_Of_Non_IT_Product__c, asset.Procurement_IT_total_amount__c, asset.Procurement_Non_IT_total_amount__c, asset.Total_amount__c FROM  salesforce.Asset_Requisition_Form__c asset '+
+             'INNER JOIN salesforce.Milestone1_Project__c proj '+
+             'ON asset.project_department__c =  proj.sfid '+
+             ' WHERE asset.Submitted_By_Heroku_User__c = $1'
 
     pool
-    .query('SELECT sfid, Name,Project_Department__c, Approval_Status__c, Number_Of_IT_Product__c, Number_Of_Non_IT_Product__c, Procurement_IT_total_amount__c, Procurement_Non_IT_total_amount__c, Total_amount__c FROM  salesforce.Asset_Requisition_Form__c WHERE Submitted_By_Heroku_User__c = $1',[userId])
+    .query(qry,[userId])
     .then((assetQueryResult) => {
             console.log('assetQueryResult   '+assetQueryResult.rows);
             if(assetQueryResult.rowCount > 0)

@@ -15,7 +15,7 @@
             <!-- <a class="btn btn-primary btn-md bg-gray" href="/procurement/getNonItProcurementListVIew/" >Refresh</a> -->
         </div>
         <div class="col-md-3">
-        <input type="text" class="form-control" placeholder="Search in table..." id="searchField">
+        <input type="text" class="form-control" placeholder="Search" id="searchField">
         </div>
         <div class="col-md-2 text-right">
         <span class="pr-3">Rows Per Page:</span>
@@ -23,7 +23,6 @@
         <div class="col-md-2">
             <div class="d-flex justify-content-end">
                 <select class="custom-select" name="rowsPerPage" id="changeRows">
-                    <option value="1">1</option>
                     <option value="5" selected>5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
@@ -61,7 +60,7 @@
       </div>
       </div>
       <div class="modal-footer">
-        <button type="sumbit" class="btn btn-secondary " id="vendDetClose" data-dismiss="modal">Close</button>
+        <button type="sumbit" class="btn btn-danger " id="vendDetClose" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -144,7 +143,7 @@
        
         <!-- Modal footer -->
         <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
         </div>
        
         </div>
@@ -224,7 +223,7 @@
               </div>
               <div class="modal-footer">
                   <button type="submit" class="btn btn-primary" id="editProcurementButton" data-dismiss="modal">Save</button>
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
               </div>
             </form>
           </div>

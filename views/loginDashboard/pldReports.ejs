@@ -1,8 +1,8 @@
 <% include ../partials/navbar %>
-
+<% include ../partials/footer %>
+<h3 style="text-align: center; margin-top: 20px;">PLD Forms</h3>
 <% if(showExcelReport){ %>
-  <h3 style="text-align: center; margin-top: 20px;">PLD Forms</h3>
-  <div class="row mt-5">
+  <div class="row mt-4">
         <div class="col-md-6 m-auto">
            <div class="card card-body">
                 <label for="validationTooltip03">Select Project</label>
@@ -29,23 +29,22 @@
 
 <!-- Pld Forms Modal -->
 
-<div class="row mt-5">
+<div class="row mt-4">
     <div class="col-md-8 m-auto">
       <div class="card card-body">
-          <h4><center>Available PLD Forms </center></h4>
+       
           <div  class="table-responsive">
             <div id="spinnerPldForm">
                 <center> <img src="/spinner-gif-transparent-background-14.gif" />  </center>
             </div>
   
-           <table class="table table-striped" id="pldTable">
-  
+           <table class="table table-striped" id="pldTable" style="overflow-x:auto;">
+            <h4><center>Available PLD Forms </center></h4>
            </table>
           </div>
       </div>
     </div>
   </div>
-  
 
   <!-- Responses Modal -->
   <div id="responsesModal" class="modal fade bs-example-modal-xl" tabindex ="-1" role="dialog" aria-labelledby="myLargeModalLabel" >
@@ -285,7 +284,7 @@
 
                 let htmlTable = '';
                 htmlTable += '<thead><tr>';
-                htmlTable += '<th colspan="6">No Pld Form Found</th>';
+                htmlTable += '<th colspan="6"><center><h6>No Pld Form Available<h6><center></th>';
                
                 htmlTable += '</tr></thead>';
                 htmlTable += '<tbody>';

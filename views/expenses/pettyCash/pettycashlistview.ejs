@@ -4,24 +4,24 @@
 
 <link rel="stylesheet" href="/stylesheets/table-sortable.css">
 <script src="/scripts/table-sortable.js" ></script>
+<meta name="viewport" content="width=device-width"/>
 
-
-<center><h3>PettyCash ListView</h3></center>
+<center><h3 style="text-align: center; margin-top: 20px;">Petty Cash</h3></center>     
 <p id="expenseId"><%= expenseId %></p>
 
 <div class="container">
                 <div class="row mt-5 mb-3 align-items-center">
                     <div class="col-md-5">
-                        <a class="btn btn-primary btn-md bg-gray" href="/expense/pettyCash/<%= expenseId %>" id="createNewPettyCashButton">Create New PettyCash</a>
-                        <a class="btn btn-primary btn-md bg-gray" href="/expense" >Go To Expense Page</a>
+                        <a class="btn btn-primary btn-md bg-gray" href="/expense/pettyCash/<%= expenseId %>" id="createNewPettyCashButton">Create New</a>
+                        <a class="btn btn-primary btn-md bg-gray" href="/expense" >Go To Expense </a>
                     </div>
                     <div class="col-md-3">
-                    <input type="text" class="form-control" placeholder="Search in table..." id="searchField">
+                    <input type="text" class="form-control" placeholder="Search in table..." id="searchField" style="margin-top: 5px;">
                     </div>
                     <div class="col-md-2 text-right">
-                    <span class="pr-3">Rows Per Page:</span>
+                    <span class="pr-2">Rows Per Page:</span>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-1">
                         <div class="d-flex justify-content-end">
                             <select class="custom-select" name="rowsPerPage" id="changeRows">
                                 <option value="1">1</option>
@@ -33,7 +33,7 @@
                     </div>
              </div>
 
-             <div id="pettyCashExpenseTable" class="responsive ">
+             <div id="pettyCashExpenseTable" style="overflow-x:auto;">
 
              </div>
 

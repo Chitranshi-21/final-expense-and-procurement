@@ -2,23 +2,24 @@
 <% include ./partials/footer %>
 <% include ./partials/messages %>
 <link rel="stylesheet" href="/stylesheets/table-sortable.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="/scripts/table-sortable.js" ></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-<h3 style="text-align: center; margin-top: 20px;">Impaneled Vendor List View</h3>
+<h3 style="text-align: center; margin-top: 20px;">Impaneled Vendor</h3>
 <div class="container">
     <div class="row mt-5 mb-3 align-items-center">
         <div class="col-md-5">
-            <a class="btn btn-primary btn-md bg-gray" href="/procurement/createvendor" id="createNewVendor">Create New  Vendor</a>
-            <a  href="/procurement/getvendorListView" style=" color: HEX #2c293d ;" id="ref" ><i class="fa fa-refresh" style="font-size:34px; margin-left: 10px; margin-top: 30px;"></i> </a>
+            <a class="btn btn-primary btn-md bg-gray" href="/procurement/createvendor" id="createNewVendor">Create New</a>
+            <a  href="/procurement/getvendorListView" style="color: #555;" id="ref" ><i class="fa fa-refresh" style="font-size:34px; margin-left: 10px; margin-top: 30px;"></i> </a>
                </div>
         <div class="col-md-3">
-        <input type="text" class="form-control" placeholder="Search" id="searchField">
+        <input type="text" class="form-control" placeholder="Search" id="searchField" style="margin-top: 5px;">
         </div>
         <div class="col-md-2 text-right">
-        <span class="pr-3">Rows Per Page:</span>
+        <span class="pr-2">Rows Per Page:</span>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-1">
             <div class="d-flex justify-content-end">
                 <select class="custom-select" name="rowsPerPage" id="changeRows">
                     <option value="5" selected>5</option>

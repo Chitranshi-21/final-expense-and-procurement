@@ -3,10 +3,6 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-a {
-  color: #00B7FF;
-}
-
-a ref {
-  color: HEX #2c293d;
+a:link {
+  color: #2c293d;
 }

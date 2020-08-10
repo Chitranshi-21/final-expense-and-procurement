@@ -4,9 +4,8 @@
 <p id ="parentId"><%=parentAssetId %></p>
 <link rel="stylesheet" href="/stylesheets/table-sortable.css">
 <script src="/scripts/table-sortable.js" ></script>
-<div>
-<h4 style="text-align: center;">PROCUREMENT NON IT LIST VIEW</h4>
-</div>
+
+<h3 style="text-align: center; margin-top: 20px;">PROCUREMENT NON IT </h3>
 
 <div class="container">
     <div class="row mt-5 mb-3 align-items-center">
@@ -15,12 +14,12 @@
             <!-- <a class="btn btn-primary btn-md bg-gray" href="/procurement/getNonItProcurementListVIew/" >Refresh</a> -->
         </div>
         <div class="col-md-3">
-        <input type="text" class="form-control" placeholder="Search" id="searchField">
+        <input type="text" class="form-control" placeholder="Search" id="searchField" style="margin-top: 5px;">
         </div>
         <div class="col-md-2 text-right">
-        <span class="pr-3">Rows Per Page:</span>
+        <span class="pr-2">Rows Per Page:</span>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-1">
             <div class="d-flex justify-content-end">
                 <select class="custom-select" name="rowsPerPage" id="changeRows">
                     <option value="5" selected>5</option>
@@ -160,7 +159,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Edit Procurement NON IT   Form</h5>
+          <h5 class="modal-title">Edit Procurement NON IT Form</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -249,13 +248,14 @@
     
             let columns ={
                 sequence : 'Sequence',
+                editAction:'Action',
                 name: 'Procurement Non-IT ID',
                 item : 'Items',
                 item_category:'Items Category',
                 quantity: 'Quantity',
                 budget:'Budget',
                 vendor:'Impanel Vendor',
-                editAction:'Action',
+             
             }
           
           var table = $('#nonItTable').tableSortable({

@@ -109,7 +109,7 @@
 
 <div class="container-fluid bg-gray" id="accordion-style-1">
       <p id="expenseIdpTag"> </p>
-      <h3 style="text-align: center; margin-top: 20px;">Expense List View</h3>
+      <h3 style="text-align: center; margin-top: 20px;">Expense </h3>
   <div class="container">
       <div id="success" class="alert alert-success alert-dismissible fade show" role="alert">
  
@@ -120,16 +120,16 @@
       <section>
             <div class="row mt-6 mb-3 align-items-center">
                       <div class="col-md-5">
-                          <button class="btn btn-primary btn-md bg-gray"  id="createNewExpenseButton">Create New Expense</button>
-                        <i class="fa fa-refresh" aria-hidden="true" id="refresh"  style="font-size:34px; margin-left: 10px; margin-top: 30px;"></i> 
+                          <button class="btn btn-primary btn-md bg-gray"  id="createNewExpenseButton">Create New</button>
+                        <i class="fa fa-refresh" aria-hidden="true" id="refresh"  style="font-size:34px; margin-left: 10px; margin-top: 30px; color: #555;"></i> 
                       </div>
                       <div class="col-md-3">
-                        <input type="text" class="form-control" placeholder="Search" id="searchField">
+                        <input type="text" class="form-control" placeholder="Search" id="searchField" style="margin-top: 5px;">
                       </div>
                       <div class="col-md-2 text-right">
-                        <span class="pr-3">Rows Per Page:</span>
+                        <span class="pr-1">Rows Per Page:</span>
                       </div>
-                      <div class="col-md-2">
+                      <div class="col-md-1">
                           <div class="d-flex justify-content-end">
                               <select class="custom-select" name="rowsPerPage" id="changeRows">
                                   <option value="5" selected>5</option>
@@ -139,7 +139,7 @@
                           </div>
                       </div>
               </div>
-              <div class=" table-responsive md-10 table-wrap" id="rootExpenseTable">
+              <div class=" responsive" id="rootExpenseTable">
                   <div id="spinner">
                       <center> <img src="/spinner-gif-transparent-background-14.gif" />  </center>
                     </div>
@@ -301,12 +301,12 @@
                 <div class="row">
                   <div class="col-md-6">
                     <label for="validationTooltip01">Expense Name</label>
-                    <input type="text" class="form-control" id="validationTooltip01" value="" placeholder="Expense Name"  name="taskname" required>
+                    <input type="text" class="form-control" id="validationTooltip01" value="" placeholder="Expense Name"  name="taskname" >
                   </div>
                   
                   <div class="col-md-6">
                     <label for="proj">Project Name</label>
-                    <select class="custom-select custom-select-sm form-control" id="proj" name="proj">
+                    <select class="custom-select custom-select-sm form-control" id="proj" required="true" name="proj">
                         <option selected value="" ></option>
                     </select>
                   </div>

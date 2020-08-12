@@ -9,37 +9,18 @@ const { json } = require('body-parser');
 const router = new Router();
 
 router.get('/',verify,(request, response)=> {
-    
-    console.log('Procurement request.user '+JSON.stringify(request.user));
-    var userId = request.user.sfid; 
-    var objUser = request.user;
-    console.log('Procurement userId : '+userId);
-    let qry ='SELECT asset.sfid, asset.Name, proj.name as projname, proj.sfid as projId, asset.Approval_Status__c, asset.Number_Of_IT_Product__c, asset.Number_Of_Non_IT_Product__c, asset.Procurement_IT_total_amount__c, asset.Procurement_Non_IT_total_amount__c, asset.Total_amount__c FROM  salesforce.Asset_Requisition_Form__c asset '+
-             'INNER JOIN salesforce.Milestone1_Project__c proj '+
-             'ON asset.project_department__c =  proj.sfid '+
-             ' WHERE asset.Submitted_By_Heroku_User__c = $1'
-
-    pool
-    .query(qry,[userId])
-    .then((assetQueryResult) => {
-            console.log('assetQueryResult   '+assetQueryResult.rows);
-            if(assetQueryResult.rowCount > 0)
-                response.render('assetRequistionForms',{objUser : objUser, name:request.user.name, email : request.user.email, assetList : assetQueryResult.rows });
-            else
-                response.render('assetRequistionForms',{objUser : objUser, name:request.user.name, email : request.user.email, assetList : []});
-    })
-    .catch((assetQueryError) => {
-        console.log('assetQueryError   '+assetQueryError.stack);
-        response.render('assetRequistionForms',{objUser : objUser,name:request.user.name, email : request.user.email, assetList : []});
-    })
+   
+        let objUser=request.user;
+        console.log('user '+objUser);  
+        response.render('assetRequistionForms',{objUser});    
 });
 
 router.get('/assetDetails',verify,(request, response)=> {
-    
-    console.log('Procurement request.user '+JSON.stringify(request.user));
-    var userId = request.user.sfid; 
+    console.log('inside asset details');
+    console.log('Asset request.user '+JSON.stringify(request.user));
+    var userId = request.user.sfid;
     var objUser = request.user;
-    console.log('Procurement userId : '+userId);
+    console.log('Asset userId : '+userId);
     let qry ='SELECT asset.sfid, asset.Name, proj.name as projname, proj.sfid as projId, asset.Approval_Status__c, asset.Number_Of_IT_Product__c, asset.Number_Of_Non_IT_Product__c, asset.Procurement_IT_total_amount__c, asset.Procurement_Non_IT_total_amount__c, asset.Total_amount__c FROM  salesforce.Asset_Requisition_Form__c asset '+
              'INNER JOIN salesforce.Milestone1_Project__c proj '+
              'ON asset.project_department__c =  proj.sfid '+
@@ -51,42 +32,34 @@ router.get('/assetDetails',verify,(request, response)=> {
             console.log('assetQueryResult   '+assetQueryResult.rows);
             if(assetQueryResult.rowCount > 0)
             {
+              let modifiedList = [];
             console.log('assetQueryResult   : '+JSON.stringify(assetQueryResult.rows));
-            var projectIDs = [], projectIDparams = [];
-            for(let i =1 ;i <= assetQueryResult.rowCount ; i++)
-            {
-                console.log('Inside For Loop ');
-                projectIDs.push(assetQueryResult.rows[i-1].Name);
-                projectIDparams.push('$'+i);
-            }
-
-            let assetList = [];
             for(let i=0 ; i < assetQueryResult.rows.length; i++)
             {
-              let obj = {};
+                let obj = {};
               obj.sequence = i+1;
-              obj.editButton = '<button    data-toggle="modal" data-target="#assetRequisitionEditModal" class="btn btn-primary assetRequisitionEditModalButton"   id="edit'+assetQueryResult.rows[i].sfid+'" >Edit</button>';
-              obj.name = '<a href="'+assetQueryResult.rows[i].sfid+'" data-toggle="modal" data-target="#popup" class="assetId" id="name'+assetQueryResult.rows[i].sfid+'"  >'+assetQueryResult.rows[i].name+'</a>';
+             // obj.editbutton = '<button    data-toggle="modal" data-target="#assetRequisitionEditModal" class="btn btn-primary assetRequisitionEditModalButton"   id="'+assetQueryResult.rows[i].sfid+'" >Edit</button>';
+              obj.editbutton = '<button href="#" class="btn btn-primary editAssetForm" id="'+assetQueryResult.rows[i].sfid+'" >Edit</button>'
+              obj.name = '<a href="'+assetQueryResult.rows[i].sfid+'" data-toggle="modal" data-target="#popup" class="assetTag" id="name'+assetQueryResult.rows[i].sfid+'"  >'+assetQueryResult.rows[i].name+'</a>';
               obj.projectname = assetQueryResult.rows[i].projname;
-              obj.noIT = assetQueryResult.rows[i].Number_Of_IT_Product__c;
-              obj.noNonIT = assetQueryResult.rows[i].Number_Of_Non_IT_Product__c;
-              obj.itAmount = assetQueryResult.rows[i].Procurement_IT_total_amount__c;
-              obj.nonITAmount = assetQueryResult.rows[i].Procurement_Non_IT_total_amount__c;
-              obj.totalAmount = assetQueryResult.rows[i].Total_amount__c;
-              obj.approvalButton = '<button    data-toggle="modal" data-target="#assetRequisitionEditModal" class="btn btn-primary assetRequisitionEditModalButton"   id="edit'+assetQueryResult.rows[i].sfid+'" >Approval</button>';
-              obj.accountsApprovalButton = '<button    data-toggle="modal" data-target="#assetRequisitionEditModal" class="btn btn-primary assetRequisitionEditModalButton"   id="edit'+assetQueryResult.rows[i].sfid+'" >Accounts Approval</button>';
-              assetList.push(obj);
-            }
-
-            let successMessages = [];
-            successMessages.push({s_msg : 'Asset Data Received'})
-           request.flash({successs_msg : 'Asset Data Received'});
-            response.send({objUser : objUser, assetList : assetList, successs_msg : 'Asset Data Received'});
-        }
-        else
-        {
-            response.send({objUser: objUser, assetList : []});
-        }
+              obj.noit = assetQueryResult.rows[i].number_of_it_product__c;
+              obj.nononit = assetQueryResult.rows[i].number_of_non_it_product__c;
+              obj.itamount = assetQueryResult.rows[i].procurement_it_total_amount__c;
+              obj.nonitamount = assetQueryResult.rows[i].procurement_non_it_total_amount__c;
+              obj.totalamount = assetQueryResult.rows[i].total_amount__c;
+              obj.approvalbutton = '<button href="#" class="btn btn-primary approvalpopup" id="'+assetQueryResult.rows[i].sfid+'" >Approval</button>'
+              obj.accountsapprovalbutton = '<button href="#" class="btn btn-primary accountsapprovalpopup" id="'+assetQueryResult.rows[i].sfid+'" >Accounts Approval</button>'
+              modifiedList.push(obj);
+              }
+              response.send(modifiedList);
+              let successMessages = [];
+              successMessages.push({s_msg : 'Asset Data Received'})
+              request.flash({successs_msg : 'Asset Data Received'});
+          }
+          else
+          {
+              response.send([]);
+          }
     })
     .catch((assetQueryError) => {
       console.log('assetQueryError   '+assetQueryError.stack);
@@ -1494,7 +1467,7 @@ router.post('/sendProcurementAccountsApproval',(request, response) => {
           if((eachRequisitionForm.manager_approval__c == null) &&
               (eachRequisitionForm.procurement_head_approval__c == null) &&
               (eachRequisitionForm.procurement_committee_approval__c == null) &&
-              (eachRequisitionForm.asset.Procurement_Comt_Approval_for_fortnight__c == null)  &&
+              (eachRequisitionForm.asset.procurement_comt_approval_for_fortnight__c == null)  &&
               (eachRequisitionForm.management_approval__c == null)  &&
               (eachRequisitionForm.chairperson_approval__c == null) &&
               (eachRequisitionForm.management_approval_less_than_3_quotes__c == null ) &&

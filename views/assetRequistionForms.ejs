@@ -162,7 +162,7 @@
 
  <div class="col-md-6">
  <label for="validationTooltip01">Project/Department</label>
- <select id="projectName" class="form-control projectName" name="projectName">
+ <select id="projectname" class="form-control projectname" name="projectname">
  
  </select>
  </div>
@@ -239,15 +239,12 @@
   <label for="assetName">Asset Requistion Name</label>
   <input type="text" class="form-control" id="assetName" value="" name="assetName" required>
   </div>
-  
+
   <div class="col-md-6">
-  <label for="projectName">Project Name</label>
-  <select id="projectName" class="form-control projectName" name="projectName">
- 
-  </select>
- 
-  <!-- <select id="projectName" class="custom-select custom-select-sm form-control" name="projectName">
-  </select> -->
+  <label for="project">Project Name</label>
+   <select id="project" class="custom-select custom-select-sm form-control" name="project">
+
+  </select> 
  
   </div>
   </div>
@@ -987,8 +984,13 @@
       assetDetailsTableRows += '<td>'+assetDetailsRecord.delivery_terms_delivery_place__c+'</td>';
       assetDetailsTableRows += '</tr>'; 
       assetDetailsTableRows += '<tr>';
-      assetDetailsTableRows += '<td><strong>Delivery Terms: Delivery Time<strong></td>';
-      assetDetailsTableRows += '<td>'+assetDetailsRecord.delivery_terms_delivery_time__c+'</td>';
+      assetDetailsTableRows += '<td><strong>Delivery Terms : Delivery Time<strong></td>';
+          if(assetDetailsRecord.delivery_terms_delivery_time__c!=null){
+      assetDetailsTableRows += '<td>'+assetDetailsRecord.delivery_terms_delivery_time__c.split('T')[0]+'</td>';
+            }
+         else{
+      assetDetailsTableRows +='<td></td>';
+            }
       assetDetailsTableRows += '<td><strong>Delivery cost Incl. / Excl. of Transport<strong></td>';
       assetDetailsTableRows += '<td>'+assetDetailsRecord.delivery_cost_incl__c+'</td>';
       assetDetailsTableRows += '</tr>'; 
@@ -1109,17 +1111,24 @@
             console.log('After Show Edit Modal ');
             $.get("/procurement/assetEditDetails",{assetId : assetId},
  function(assetDetailsRecord){
- //console.log('Edit assetDetails : '+JSON.stringify(assetDetailsRecord));
+ console.log('Edit assetDetails : '+JSON.stringify(assetDetailsRecord));
  let assetRecord = assetDetailsRecord.asset[0];
-  
+  console.log('Asset Edit details'+JSON.stringify(assetDetailsRecord));
  //let activityCodes = assetDetailsRecord.activity[0];
  let activityCodes = [];
+ let projectlst = [];
  for(let i=0; i< assetDetailsRecord.activity.length ;i++)
       {
         activityCodes.push(assetDetailsRecord.activity[i]);
       }
  console.log('Asset Details list'+JSON.stringify(assetRecord));
  console.log('Activity Codes'+JSON.stringify(activityCodes));
+ for(let i=0; i< assetDetailsRecord.projectlist.length ;i++)
+      {
+        projectlst.push(assetDetailsRecord.projectlist[i]);
+      }
+console.log('Project List'+JSON.stringify(projectlst));
+ 
  let strReceivingGoodsDate=''; 
  let strclousreActualDate='';
  let clousrePlanDate =''; 
@@ -1146,11 +1155,19 @@
         .attr("value",activityCodes[i].sfid)
         .text(activityCodes[i].name));	
       }
+      for(let i=0; i< projectlst.length ;i++)
+      {
+        console.log("project sfid ssss"+projectlst[i].sfid);
+        $('#project')
+        .append($("<option></option>")
+        .attr("value",projectlst[i].sfid)
+        .text(projectlst[i].name));	
+      }
       
  document.forms["editAssetForm"]["assetName"].value = assetRecord.name;
  document.forms["editAssetForm"]["closureActualDate"].value = strclousreActualDate;
  document.forms["editAssetForm"]["closurePlanDate"].value =clousrePlanDate;
- document.forms["editAssetForm"]["projectName"].value = assetRecord.projname;
+ document.forms["editAssetForm"]["project"].value = assetRecord.pid;
  document.forms["editAssetForm"]["activityCode"].value = assetRecord.activity_code_project__c;
  document.forms["editAssetForm"]["attachment"].value = assetRecord.p_o_attachment__c; 
  document.forms["editAssetForm"]["status"].value = assetRecord.status__c; 
@@ -1170,10 +1187,8 @@
  document.forms["editAssetForm"]["pricing"].value = assetRecord.pricing_terms_cost_comparison__c;
  document.forms["editAssetForm"]["deliveryPlace"].value = assetRecord.delivery_terms_delivery_place__c;
  
-console.log('aman');
 if(assetRecord.delivery_terms_delivery_time__c!=null){
     document.forms["editAssetForm"]["deliveryTime"].value = assetRecord.delivery_terms_delivery_time__c.split('T')[0];
-    console.log('aman');
 }
  document.forms["editAssetForm"]["deliveryCost"].value = assetRecord.delivery_cost_incl__c;
  document.forms["editAssetForm"]["quotations"].value = assetRecord.if_3_quotations_specify_reason__c;
@@ -1182,7 +1197,7 @@ if(assetRecord.delivery_terms_delivery_time__c!=null){
 
  }).fail(function(jqXHR, status, error){
  console.log('jqXHR : '+JSON.stringify(jqXHR));
- console.log('textStatus : '+textStatus);
+ //console.log('textStatus : '+textStatus);
  })
  });
  /* Clearing the fields when a modal is closed */

@@ -67,15 +67,16 @@ router.get('/assetDetails',verify,(request, response)=> {
     })
 });
 
-router.get('/assetEditDetails',(request, response) =>{
-
+router.get('/assetEditDetails',verify ,async(request, response) =>{
+   console.log('hii inside asset details');
     let assetId = request.query.assetId;
     console.log('assetId  '+assetId);
-
-    let qyr='SELECT asset.id, asset.sfid as sfid,asset.name as name ,asset.Activity_Code_Project__c, asset.GST__c,asset.Requested_Closure_Plan_Date__c,asset.Requested_Closure_Actual_Date__c,asset.Project_Department__c, '+
+    let objUser = request.user;
+    console.log('User:' +objUser);
+    let qyr='SELECT asset.id, asset.sfid as sfid,asset.name as name ,asset.Activity_Code_Project__c, asset.GST__c,asset.Requested_Closure_Plan_Date__c,asset.Requested_Closure_Actual_Date__c,asset.Project_Department__c as pid, '+
     'asset.Manager_Approval__c,asset.Management_Approval__c,asset.Procurement_Committee_Approval__c,asset.Chairperson_Approval__c,asset.Committee_Approved_Counts__c,'+
     'asset.Comittee_Rejected_Count__c,asset.Procurement_Committee_Status__c,asset.Accounts_Approval__c,asset.Procurement_Head_Approval__c,asset.Approval_Status__c,'+
-    'asset.Number_Of_IT_Product__c,asset.Number_Of_Non_IT_Product__c,asset.Procurement_IT_total_amount__c,asset.Procurement_Non_IT_total_amount__c, asset.Total_amount__c,proj.name as projname,proj.sfid as profsfid, '+
+    'asset.Number_Of_IT_Product__c,asset.Number_Of_Non_IT_Product__c,asset.Procurement_IT_total_amount__c,asset.Procurement_Non_IT_total_amount__c, asset.Total_amount__c,proj.name as projname,proj.sfid as profsfid,'+
     'asset.Management_Approval_Activity_Code__c,asset.Management_Approval_for_fortnight_limit__c,asset.P_O_attachment__c, '+
     'asset.Management_Approval_less_than_3_quotes__c,asset.Procurement_Comt_Approval_for_fortnight__c, '+
      'asset.P_O_attachment__c,po_attachment_url__c,payment_status__c,asset.status__c,asset.payment_received_acknowledgement__c,asset.receiver_name__c,asset.received_quantity_goods__c,asset.date_of_receiving_goods__c, '+
@@ -88,6 +89,7 @@ router.get('/assetEditDetails',(request, response) =>{
       console.log('qry '+qyr);
       let popupDetails = [];
       var objData =  {};
+      await
        pool
        .query(qyr,[assetId])
        .then((assetQueryResult)=> {
@@ -124,7 +126,7 @@ router.get('/assetEditDetails',(request, response) =>{
                                        }
                                        objData.activity = lstActivityCode;
                                      //  details.push(lstActivityCode);
-                                       response.send(objData);
+                                       //response.send(objData);
                                      }
                                    })
                                    .catch((activityCodeQueryError) => {
@@ -133,11 +135,63 @@ router.get('/assetEditDetails',(request, response) =>{
                                    })
                                  }
                                })
-                               .catch((expenseQueryError) =>
+                               .catch((projectQueryError) =>
                                    {
-                                 console.log('expenseQueryError  : '+expenseQueryError.stack);
+                                 console.log('projectQueryError  : '+projectQueryError.stack);
                                   })
-           
+
+                        pool
+                        .query('SELECT sfid, Name, Team__c FROM salesforce.Team_Member__c WHERE Representative__c = $1 ;',[objUser.sfid])
+                        .then(teamMemberResult => {
+                            console.log('Name of TeamMemberId  : '+teamMemberResult.rows[0].name+' sfid :'+teamMemberResult.rows[0].sfid);
+                            console.log('Team Id  : '+teamMemberResult.rows[0].team__c);
+                            console.log('Number of Team Member '+teamMemberResult.rows.length);
+
+                            var projectTeamparams = [], lstTeamId = [];
+                            for(var i = 1; i <= teamMemberResult.rows.length; i++) {
+                            projectTeamparams.push('$' + i);
+                            lstTeamId.push(teamMemberResult.rows[i-1].team__c);
+                            } 
+                            var projectTeamQueryText = 'SELECT sfid, Name, Project__c FROM salesforce.Project_Team__c WHERE Team__c IN (' + projectTeamparams.join(',') + ')';
+                            console.log('projectTeamQueryText '+projectTeamQueryText);
+                            
+                            pool
+                            .query(projectTeamQueryText,lstTeamId)
+                            .then((projectTeamResult) => {
+                                console.log('projectTeam Reocrds Length '+projectTeamResult.rows.length);
+                                console.log('projectTeam Name '+projectTeamResult.rows[0].name);
+
+                                var projectParams = [], lstProjectId = [];
+                                for(var i = 1; i <= projectTeamResult.rows.length; i++) {
+                                    projectParams.push('$' + i);
+                                    lstProjectId.push(projectTeamResult.rows[i-1].project__c);
+                                } 
+                                console.log('lstProjectId  : '+lstProjectId);
+                                let projetQueryText = 'SELECT sfid, Name FROM salesforce.Milestone1_Project__c WHERE sfid IN ('+ projectParams.join(',')+ ')';
+
+                                pool.query(projetQueryText, lstProjectId)
+                                .then((projectQueryResult) => { 
+                                        console.log('Number of Projects '+projectQueryResult.rows.length);
+                                        objData.projectlist = projectQueryResult.rows;
+                                        response.send(objData);
+                                })
+                                .catch((projectQueryError) => {
+                                    console.log('projectQueryError  '+projectQueryError.stack);
+                                    response.send({});
+
+                                })
+                                })   
+                            .catch((projectTeamQueryError)=> {
+                                console.log('projectTeamQueryError  '+projectTeamQueryError.stack);
+                                response.send({});
+                            })
+                            })
+                            .catch((teamMemberQueryError) => {
+                            console.log('teamMemberQueryError  '+teamMemberQueryError.stack);
+                            response.send({});
+                            })
+
+                            
            }
            else
            {
@@ -376,9 +430,10 @@ router.post('/updateasset',(request,response)=>{
     let closurePlanDate =request.body.closurePlanDate;
     let goodsDate=request.body.goodsDate;
     console.log('body  : '+JSON.stringify(body));
-    const {assetsfid, assetName,activityCode,paymentStatus,status,payement,receiverName,receivedQuantity,quotations,reason,pricing,deliveryPlace,deliveryTime,deliveryCost,attachment} = request.body;
+    const {assetsfid, assetName,project,activityCode,paymentStatus,status,payement,receiverName,receivedQuantity,quotations,reason,pricing,deliveryPlace,deliveryTime,deliveryCost,attachment} = request.body;
     console.log('assetsfid    '+assetsfid);
     console.log('closureActualDate  '+closureActualDate);
+    console.log('projectname  '+project);
     console.log('closurePlanDate  '+closurePlanDate);
     console.log('activityCode  '+activityCode);
     console.log('paymentStatus  '+paymentStatus);
@@ -413,6 +468,7 @@ router.post('/updateasset',(request,response)=>{
     console.log('goodsDate'+goodsDate);
     let updateQuerry = 'UPDATE salesforce.Asset_Requisition_Form__c SET '+
     'Name = \''+assetName+'\', '+
+    'project_department__c = \''+project+'\' , '+
     'Requested_Closure_Actual_Date__c = \''+closureActualDate+'\', '+
     'Requested_Closure_Plan_Date__c = \''+closurePlanDate+'\', '+
     'Activity_Code_Project__c = \''+activityCode+'\', '+

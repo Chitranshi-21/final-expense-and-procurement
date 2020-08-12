@@ -340,16 +340,22 @@ router.post('/createExpense',(request, response) => {
    console.log('empCategory  '+empCategory);
    console.log('incurredBy  '+incurredBy);
 
-   pool
-   .query('INSERT INTO salesforce.Milestone1_Expense__c (name,project_name__c,department__c,Conveyance_Employee_Category_Band__c,Incurred_By_Heroku_User__c) values ($1,$2,$3,$4,$5)',[taskname,proj,department,empCategory,incurredBy])
-   .then((expenseInsertResult) => {     
-            console.log('expenseInsertResult.rows '+JSON.stringify(expenseInsertResult.rows));
-            response.send('Success');
-   })
-   .catch((expenseInsertError) => {
-        console.log('expenseInsertError   '+expenseInsertError.stack);
-        response.send('Error');
-   })
+   if(proj== ""){
+     response.send('Please fill Project name');
+                }
+  else{
+    pool
+    .query('INSERT INTO salesforce.Milestone1_Expense__c (name,project_name__c,department__c,Conveyance_Employee_Category_Band__c,Incurred_By_Heroku_User__c) values ($1,$2,$3,$4,$5)',[taskname,proj,department,empCategory,incurredBy])
+    .then((expenseInsertResult) => {     
+             console.log('expenseInsertResult.rows '+JSON.stringify(expenseInsertResult.rows));
+             response.send('Success');
+    })
+    .catch((expenseInsertError) => {
+         console.log('expenseInsertError   '+expenseInsertError.stack);
+         response.send('Error');
+    })
+  }
+   
  
 });
 

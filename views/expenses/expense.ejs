@@ -1113,10 +1113,10 @@
                         alert('Updated Successfully !');
                         onLoadTask();
                     }
-                    else if(xhr.responseText == 'Please fill Project name')
-                    {
-                        alert('Please fill Project name');
-                    }
+                   else
+                   {
+                    alert(xhr.responseText);
+                   }
                     })
                 })
             });

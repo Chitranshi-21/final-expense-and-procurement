@@ -1,10 +1,6 @@
 
 <% include ./partials/messages %>
 <% include ./partials/navbar %>
-<% include ./partials/footer %>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="/stylesheets/table-sortable.css">
-<script src="/scripts/table-sortable.js" ></script>
 
  <style>
  .project-tab {
@@ -401,37 +397,6 @@
  console.log('error '+err);
  })
  $('#createAssetRequisitionFormButton').click(function() {
-  let projId = this.id;
- console.log('Before Show create Asset Requisition Form Button Modal ');
- $('#createAssetRequisitionForm').modal('show');
- console.log('After Show Edit Modal ');
- let lstActivityCodes = [];
-
- $.ajax({
-      url : '/procurement/fetchActivityCodeforCreateNew',
-      data : {
-         projId : projId
-      },
-      dataType : 'json',
-      type : 'get'
-  })
-  .done((response) => {
-      console.log('response  '+JSON.stringify(response));
-      if(response.length > 0)
-          {
-          response.forEach((eachActivity) => {
-          console.log('eachActivity.name '+eachActivity.name);
-          $('#act')
-          .append($("<option></option>")
-          .attr("value",eachActivity.sfid)
-          .text(eachActivity.name))
-          }); 
-          }
-  })
-  .fail((jqXHR,text,err) => {
-      console.log('text  '+text + '  err '+err);
-  })
-
  $('#createAssetRequisitionForm').modal('show');
  $('#assetRequisitionSubmitbutton').on('click',function(event){
  alert('clcker save button');
@@ -475,9 +440,34 @@
  </script>
 
 
+
+
+
+
+
+
+
  <br/>
 
  <p id="assetId"></p>
+
+ <form class="container-fluid bg-gray">
+ <div class="form-row mb-4 col-10 mx-auto">
+ <div class="col form-inline" >
+ 
+ </div>
+ <div class="col form-inline" >
+ 
+ </div>
+ <div class="col form-inline" >
+ 
+ </div>
+ <div class="col">
+ <button class="btn btn-primary btn-block bg-gray" type="button" id="createAssetRequisitionFormButton">Create New</button>
+ </div>
+ </div>
+ </form>
+ 
  <div id="createAssetRequisitionForm" class="modal fade bs-example-modal-lg" tabindex ="-1" role="dialog" aria-labelledby="myLargeModalLabel" >
  <div class="modal-dialog modal-lg" role="document">
  <div class="modal-content">
@@ -527,9 +517,7 @@
  <div class="row">
  <div class="col-md-6">
  <label for="act">Activity code</label>
- <select id="act" class="form-control act" name="act">
-
-</select>
+ <input type="text" class="form-control" id="act" name="act" >
  </div>
 
  <div class="col-md-6">
@@ -573,7 +561,7 @@
  
 
  <div class="modal-footer">
- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+ <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
  <button type="submit" id="assetRequisitionSubmitbutton" class="btn btn-primary">Save</button>
  </div>
 
@@ -611,7 +599,7 @@
  </div>
  <div class="modal-footer">
  <button type="button" class="btn btn-primary" id="submitForApproval" >Submit</button>
- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+ <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
  </div>
  </div>
  </div>
@@ -622,18 +610,9 @@
 
  <!-- Table Containing rows -->
  <div class="col-10 mx-auto table-responsive">
-  <div class="container-fluid bg-gray" id="accordion-style-1">
-    <p id="expenseIdpTag"> </p>
-    <h3 style="text-align: center; margin-top: 20px;">Asset Requisition </h3>
-  <div class="container">
-  
-            </div>
-    <div class=" responsive" >
-      
  <table class="table">
  <thead>
  <tr>
-  <th>Edit Action</th>
  <th>Asset Requisition Name</th>
  <th>Project Name </th>
  <th>Number of IT Product</th>
@@ -643,15 +622,15 @@
  <th>Total Amount</th>
  <th>Approval</th>
  <th>Accounts Approval</th>
+ <th>Edit Action</th>
  </tr>
  </thead>
  <tbody>
  <% if(assetList.length > 0) { %>
  <% assetList.forEach(function(eachAsset) { %>
  <tr>
-  <td><button class="btn btn-primary assetRequisitionEditModalButton" id="<%= eachAsset.sfid %>" >Edit</button></td>
  <td><a href="<%= eachAsset.sfid %>" data-toggle="modal" data-target="#popup" class="assetId" id="" ><%= eachAsset.name %></a></td>
- <td><%= eachAsset.projname %></td>
+ <td>Project 6</td>
  <td><%= eachAsset.number_of_it_product__c %></td>
  <td><%= eachAsset.number_of_non_it_product__c %></td>
  <td><%= eachAsset.procurement_it_total_amount__c %></td>
@@ -659,13 +638,14 @@
  <td><%= eachAsset.total_amount__c %></td>
  <td><button class="btn btn-primary approvalCommentModalButton" id="<%= eachAsset.sfid %>" >Approval</button></td>
  <td><button class="btn btn-primary approvalAccountsCommentModalButton" id="<%= eachAsset.sfid %>" >Accounts Approval</button></td>
+ <td><button class="btn btn-primary assetRequisitionEditModalButton" id="<%= eachAsset.sfid %>" >Edit</button></td>
  </tr>
  <% }) %>
  <% }%>
  
  </tbody>
  </table>
-</div>
+
 
  <div id="assetRequisitionForm" class="modal fade bs-example-modal-lg" tabindex ="-1" role="dialog" aria-labelledby="myLargeModalLabel" >
  <div class="modal-dialog modal-lg" role="document">
@@ -829,7 +809,7 @@
 
  <!-- Modal footer -->
  <div class="modal-footer">
- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+ <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
  </div>
 
  </div>
@@ -1057,7 +1037,7 @@
 
  <div class="modal-footer">
  <button type="submit" class="btn btn-primary" id="editassetForm" data-dismiss="modal">Save</button>
- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+ <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
  </div>
  </form>
  </div>
@@ -1093,7 +1073,7 @@
  
  <div class="modal-footer">
  <button type="submit" class="btn btn-primary" id="uploadattachmentBuuton" data-dismiss="modal">Save</button>
- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+ <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
  </div>
  </form>
  </div>
@@ -1169,6 +1149,26 @@
  console.log('Before Show Edit Modal ');
  $('#assetRequisitionEditModal').modal('show');
  console.log('After Show Edit Modal ');
+ /*let lstActivityCodes = [];
+ $.ajax({
+      url : '/procurement/fetchActivityCode',
+      data : {
+         assetId : assetId
+      },
+      dataType : 'json',
+      type : 'get'
+  })
+  .done((response) => {
+      console.log('response  '+JSON.stringify(response));
+      if(response.length > 0)
+      { 
+       
+      }
+  })
+  .fail((jqXHR,text,err) => {
+      console.log('text  '+text + '  err '+err);
+  })
+*/
  $.get("/procurement/assetEditDetails",{assetId : assetId},
  function(assetDetailsRecord){
  //console.log('Edit assetDetails : '+JSON.stringify(assetDetailsRecord));
@@ -1342,26 +1342,4 @@ if(assetRecord.delivery_terms_delivery_time__c!=null){
  
  return [year, month ,day].join('-');
  }
-     
-</script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" >
-<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" ></script>
-
-<link rel="stylesheet" href="/stylesheets/table-sortable.css">
-<script src="/scripts/table-sortable.js" ></script>
-
-<script>
-      $(".collapse").on('show.bs.collapse', function () {
-          $(this).parent().find(".fa-angle-double-right").addClass("rotate");
-      }).on('hide.bs.collapse', function () {
-          $(this).parent().find(".fa-angle-double-right").removeClass("rotate");
-      });
-
-      
-      $(document).ready(function(){
-       
-      $('#changeRows').on('change', function() {
-        table.updateRowsPerPage(parseInt($(this).val(), 10));
-      })
-    })
 </script>

@@ -221,6 +221,8 @@
 
 <!-- Asset Requisition Edit Form Modal -->
 
+<!-- Asset Requisition Form Modal -->
+
 <div id="assetRequisitionEditModal" class="modal fade ">
   <div class="modal-dialog modal-lg" role="document">
   <div class="modal-content">
@@ -239,12 +241,12 @@
   <label for="assetName">Asset Requistion Name</label>
   <input type="text" class="form-control" id="assetName" value="" name="assetName" required>
   </div>
-
+  
   <div class="col-md-6">
-  <label for="project">Project Name</label>
-   <select id="project" class="custom-select custom-select-sm form-control" name="project">
-
-  </select> 
+  <label for="projectName">Project Name</label>
+  <input type="text" class="form-control" id="projectName" value="" name="projectName" readonly="true">
+  <!-- <select id="projectName" class="custom-select custom-select-sm form-control" name="projectName">
+  </select> -->
  
   </div>
   </div>
@@ -334,6 +336,7 @@
      <div class="row">
      <div class="col-md-6">
      <label for="pricing">Pricing Terms/Cost comparison</label>
+     <!-- <input type="checkbox"  id="pricing" value="" name="pricing" > -->
      <select id="pricing" class="custom-select custom-select-sm form-control" name="pricing" >
          <option value="true">True</option>
          <option value="false">False</option>
@@ -430,7 +433,7 @@
  
   <div class="modal-footer">
   <button type="submit" class="btn btn-primary" id="editassetForm" data-dismiss="modal">Save</button>
-  <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
   </div>
   </form>
   </div>
@@ -440,6 +443,8 @@
  </div>
  
  
+  <!-- Asset Requisition Edit Modal End -->
+  
   <!-- Asset Requisition Edit Modal End -->
 
 <!--Approval Pop up-->
@@ -1100,54 +1105,69 @@
         })
 
               //additionalEditFunctionality
-              function additionalEditFunctionality(){
-            $('.editAssetForm').on('click',function(event){
-              event.stopPropagation();
-              event.stopImmediatePropagation();
-              let assetId = $(this).attr('id');
-           //   var assetId = this.id;
-              console.log('Before Show Edit Modal ' +assetId);
-           $('#assetRequisitionEditModal').modal('show');
-            console.log('After Show Edit Modal ');
-            $.get("/procurement/assetEditDetails",{assetId : assetId},
- function(assetDetailsRecord){
- console.log('Edit assetDetails : '+JSON.stringify(assetDetailsRecord));
- let assetRecord = assetDetailsRecord.asset[0];
-  console.log('Asset Edit details'+JSON.stringify(assetDetailsRecord));
- //let activityCodes = assetDetailsRecord.activity[0];
- let activityCodes = [];
- let projectlst = [];
- for(let i=0; i< assetDetailsRecord.activity.length ;i++)
-      {
-        activityCodes.push(assetDetailsRecord.activity[i]);
-      }
- console.log('Asset Details list'+JSON.stringify(assetRecord));
- console.log('Activity Codes'+JSON.stringify(activityCodes));
- for(let i=0; i< assetDetailsRecord.projectlist.length ;i++)
-      {
-        projectlst.push(assetDetailsRecord.projectlist[i]);
-      }
-console.log('Project List'+JSON.stringify(projectlst));
- 
- let strReceivingGoodsDate=''; 
- let strclousreActualDate='';
- let clousrePlanDate =''; 
- let clousreActualDate = new Date(assetRecord.requested_closure_actual_date__c);
- console.log('clousreActualDate '+clousreActualDate);
- if(assetRecord.requested_closure_actual_date__c!=null){
- strclousreActualDate = assetRecord.requested_closure_actual_date__c.split('T')[0];
- }
- 
- // console.log('strclousreActualDate : '+strclousreActualDate);
- if(assetRecord.requested_closure_plan_date__c!=null)
- {
- clousrePlanDate = assetRecord.requested_closure_plan_date__c.split('T')[0];
- }
- if(assetRecord.date_of_receiving_goods__c!=null){
- strReceivingGoodsDate = assetRecord.date_of_receiving_goods__c.split('T')[0];
- console.log('strReceivingGoodsDate : '+strReceivingGoodsDate +' :clousrePlanDate '+ clousrePlanDate);
- }
 
+ function additionalEditFunctionality()
+    {
+      $(document).ready(() => {
+      $('assetId').hide();
+      $('.assetRequisitionEditModal').on('click',function(event){
+        event.stopImmediatePropagation();
+     event.stopPropagation();
+      let assetId = this.id;
+      console.log('Before Show Edit Modal ');
+      $('#assetRequisitionEditModal').modal('show');
+       console.log('After Show Edit Modal ');
+ /*let lstActivityCodes = [];
+ $.ajax({
+      url : '/procurement/fetchActivityCode',
+      data : {
+         assetId : assetId
+      },
+      dataType : 'json',
+      type : 'get'
+  })
+  .done((response) => {
+      console.log('response  '+JSON.stringify(response));
+      if(response.length > 0)
+      { 
+       
+      }
+  })
+  .fail((jqXHR,text,err) => {
+      console.log('text  '+text + '  err '+err);
+  })
+*/
+    $.get("/procurement/assetEditDetails",{assetId : assetId},
+    function(assetDetailsRecord){
+    //console.log('Edit assetDetails : '+JSON.stringify(assetDetailsRecord));
+    let assetRecord = assetDetailsRecord.asset[0];
+      
+    //let activityCodes = assetDetailsRecord.activity[0];
+    let activityCodes = [];
+    for(let i=0; i< assetDetailsRecord.activity.length ;i++)
+          {
+            activityCodes.push(assetDetailsRecord.activity[i]);
+          }
+          console.log('Asset Details list'+JSON.stringify(assetRecord));
+      console.log('Activity Codes'+JSON.stringify(activityCodes));
+      let strReceivingGoodsDate=''; 
+      let strclousreActualDate='';
+      let clousrePlanDate =''; 
+      let clousreActualDate = new Date(assetRecord.requested_closure_actual_date__c);
+      console.log('clousreActualDate '+clousreActualDate);
+      if(assetRecord.requested_closure_actual_date__c!=null){
+      strclousreActualDate = assetRecord.requested_closure_actual_date__c.split('T')[0];
+      }
+      
+      // console.log('strclousreActualDate : '+strclousreActualDate);
+      if(assetRecord.requested_closure_plan_date__c!=null)
+      {
+      clousrePlanDate = assetRecord.requested_closure_plan_date__c.split('T')[0];
+      }
+      if(assetRecord.date_of_receiving_goods__c!=null){
+      strReceivingGoodsDate = assetRecord.date_of_receiving_goods__c.split('T')[0];
+      console.log('strReceivingGoodsDate : '+strReceivingGoodsDate +' :clousrePlanDate '+ clousrePlanDate);
+      }
       for(let i=0; i< activityCodes.length ;i++)
       {
         $('#activityCode')
@@ -1155,49 +1175,59 @@ console.log('Project List'+JSON.stringify(projectlst));
         .attr("value",activityCodes[i].sfid)
         .text(activityCodes[i].name));	
       }
-      for(let i=0; i< projectlst.length ;i++)
-      {
-        console.log("project sfid ssss"+projectlst[i].sfid);
-        $('#project')
-        .append($("<option></option>")
-        .attr("value",projectlst[i].sfid)
-        .text(projectlst[i].name));	
-      }
+    /*   $('#activityCode').on('change',function(){
+          let taskId = this.value;
+          let selectedCode = activityCodes.filter((eachCode)=> {
+            if(eachCode.sfid == taskId)
+              return eachCode;
+          })
+          let label = selectedCode[0].name;
+          document.getElementById('projectTask').value = label;
+        //  $('#projectTask'+cnt).value = label;
+          console.log('label  :'+label+' value : '+taskId);
+      }) -->
+      */
       
- document.forms["editAssetForm"]["assetName"].value = assetRecord.name;
+      document.forms["editAssetForm"]["assetName"].value = assetRecord.name;
  document.forms["editAssetForm"]["closureActualDate"].value = strclousreActualDate;
  document.forms["editAssetForm"]["closurePlanDate"].value =clousrePlanDate;
- document.forms["editAssetForm"]["project"].value = assetRecord.pid;
+ document.forms["editAssetForm"]["projectName"].value = assetRecord.projname;
  document.forms["editAssetForm"]["activityCode"].value = assetRecord.activity_code_project__c;
  document.forms["editAssetForm"]["attachment"].value = assetRecord.p_o_attachment__c; 
  document.forms["editAssetForm"]["status"].value = assetRecord.status__c; 
  document.forms["editAssetForm"]["payement"].value = assetRecord.payment_received_acknowledgement__c;
  
  document.forms["editAssetForm"]["paymentStatus"].value = assetRecord.payment_status__c;
-
  document.forms["editAssetForm"]["receiverName"].value = assetRecord.receiver_name__c;
  
  document.forms["editAssetForm"]["receivedQuantity"].value = assetRecord.received_quantity_goods__c;
  
  document.forms["editAssetForm"]["goodsDate"].value = strReceivingGoodsDate;
  document.forms["editAssetForm"]["assetsfid"].value = assetRecord.sfid;
-
  document.forms["editAssetForm"]["quotations"].value = assetRecord.if_3_quotations_specify_reason__c;
  document.forms["editAssetForm"]["reason"].value = assetRecord.reason_for_non_registered_gst_vendor__c;
  document.forms["editAssetForm"]["pricing"].value = assetRecord.pricing_terms_cost_comparison__c;
  document.forms["editAssetForm"]["deliveryPlace"].value = assetRecord.delivery_terms_delivery_place__c;
  
+console.log('aman');
 if(assetRecord.delivery_terms_delivery_time__c!=null){
     document.forms["editAssetForm"]["deliveryTime"].value = assetRecord.delivery_terms_delivery_time__c.split('T')[0];
+    console.log('aman');
 }
  document.forms["editAssetForm"]["deliveryCost"].value = assetRecord.delivery_cost_incl__c;
  document.forms["editAssetForm"]["quotations"].value = assetRecord.if_3_quotations_specify_reason__c;
  document.forms["editAssetForm"]["reason"].value = assetRecord.reason_for_non_registered_gst_vendor__c;
  document.forms["editAssetForm"]["pricing"].value = assetRecord.pricing_terms_cost_comparison__c;
 
- }).fail(function(jqXHR, status, error){
+ /*
+  console.log('checkedchecked'+JSON.stringify($('#quotations').val));
+ $('#quotations').prop('checked', assetRecord.if_3_quotations_specify_reason__c);
+ $('#reason').prop('checked', assetRecord.reason_for_non_registered_gst_vendor__c);
+ $('#pricing').prop('checked', assetRecord.pricing_terms_cost_comparison__c);
+ */
+}).fail(function(jqXHR, status, error){
  console.log('jqXHR : '+JSON.stringify(jqXHR));
- //console.log('textStatus : '+textStatus);
+ console.log('textStatus : '+textStatus);
  })
  });
  /* Clearing the fields when a modal is closed */
@@ -1221,7 +1251,8 @@ if(assetRecord.delivery_terms_delivery_time__c!=null){
  .prop("checked", "")
  .end();
  })
- $('#editassetForm').on('click',function(event){
+})
+$('#editassetForm').on('click',function(event){
  event.preventDefault();
  event.stopPropagation();
  event.stopImmediatePropagation();
@@ -1259,10 +1290,9 @@ if(assetRecord.delivery_terms_delivery_time__c!=null){
  }
  
  }) 
+})
  
- 
- }) 
-}   
+ } 
 
 //approval
 function approvalFunctionality(){

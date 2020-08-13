@@ -1435,8 +1435,7 @@ router.get('/logout', (request, response) => {
 Forget Password
 */
 router.get('/forgotpassword',(req,res)=>{
-
- // console.log('rendering'+JSON.stringify(req));
+  console.log('rendering'+JSON.req);
   res.render('forgetPassword');
 })
 
@@ -1482,7 +1481,7 @@ router.post('/sendEMail',(request,response)=>{
      service:'gmail',
       auth: {
           user:'agupta3@kloudrac.com',
-          pass:'anukasrh@1998'
+          pass:'anukarsh@1998'
       }
   })
   let message = {

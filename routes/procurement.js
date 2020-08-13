@@ -39,7 +39,7 @@ router.get('/assetDetails',verify,(request, response)=> {
                 let obj = {};
               obj.sequence = i+1;
              // obj.editbutton = '<button    data-toggle="modal" data-target="#assetRequisitionEditModal" class="btn btn-primary assetRequisitionEditModalButton"   id="'+assetQueryResult.rows[i].sfid+'" >Edit</button>';
-              obj.editbutton = '<button href="#" class="btn btn-primary editAssetForm" id="'+assetQueryResult.rows[i].sfid+'" >Edit</button>'
+              obj.editbutton = '<button href="#" class="btn btn-primary assetRequisitionEditModal" id="'+assetQueryResult.rows[i].sfid+'" >Edit</button>'
               obj.name = '<a href="'+assetQueryResult.rows[i].sfid+'" data-toggle="modal" data-target="#popup" class="assetTag" id="name'+assetQueryResult.rows[i].sfid+'"  >'+assetQueryResult.rows[i].name+'</a>';
               obj.projectname = assetQueryResult.rows[i].projname;
               obj.noit = assetQueryResult.rows[i].number_of_it_product__c;
@@ -430,10 +430,9 @@ router.post('/updateasset',(request,response)=>{
     let closurePlanDate =request.body.closurePlanDate;
     let goodsDate=request.body.goodsDate;
     console.log('body  : '+JSON.stringify(body));
-    const {assetsfid, assetName,project,activityCode,paymentStatus,status,payement,receiverName,receivedQuantity,quotations,reason,pricing,deliveryPlace,deliveryTime,deliveryCost,attachment} = request.body;
+    const {assetsfid, assetName,activityCode,paymentStatus,status,payement,receiverName,receivedQuantity,quotations,reason,pricing,deliveryPlace,deliveryTime,deliveryCost,attachment} = request.body;
     console.log('assetsfid    '+assetsfid);
     console.log('closureActualDate  '+closureActualDate);
-    console.log('projectname  '+project);
     console.log('closurePlanDate  '+closurePlanDate);
     console.log('activityCode  '+activityCode);
     console.log('paymentStatus  '+paymentStatus);
@@ -468,7 +467,6 @@ router.post('/updateasset',(request,response)=>{
     console.log('goodsDate'+goodsDate);
     let updateQuerry = 'UPDATE salesforce.Asset_Requisition_Form__c SET '+
     'Name = \''+assetName+'\', '+
-    'project_department__c = \''+project+'\' , '+
     'Requested_Closure_Actual_Date__c = \''+closureActualDate+'\', '+
     'Requested_Closure_Plan_Date__c = \''+closurePlanDate+'\', '+
     'Activity_Code_Project__c = \''+activityCode+'\', '+
@@ -581,7 +579,6 @@ router.post('/updateasset',(request,response)=>{
        console.log('queryResultUpdate '+JSON.stringify(queryResultUpdate));
        response.send('succesfully inserted');
    }).catch((eroor)=>{console.log(JSON.stringify(eroor.stack))})
-
         }
         else{response.send('LEAVE raiser fields blank')}
  
@@ -593,16 +590,6 @@ router.post('/updateasset',(request,response)=>{
     
 
 
-
-
-
-router.get('/nonItProducts/:parentAssetId',verify, (request,response) => {
-
-    let parentAssetId = request.params.parentAssetId;
-    console.log('parentAssetId  '+parentAssetId);
-
-    response.render('procurementNonIT',{name: request.user.name, email: request.user.email, parentAssetId : parentAssetId});
-});
 
 
 router.post('/nonItProducts', (request,response) => {

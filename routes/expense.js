@@ -340,15 +340,21 @@ router.post('/createExpense',(request, response) => {
    console.log('empCategory  '+empCategory);
    console.log('incurredBy  '+incurredBy);
 
-   if(proj== ""){
-     response.send('Please fill Project name');
-                }
+   const schema=joi.object({
+    taskname:joi.string().required().label('Please Fill Expense Name'),
+    proj:joi.string().required().label('Please choose Project'),
+      })
+let result=schema.validate({taskname,proj});
+if(result.error){
+    console.log('fd'+result.error);
+    response.send(result.error.details[0].context.label);    
+}
   else{
     pool
     .query('INSERT INTO salesforce.Milestone1_Expense__c (name,project_name__c,department__c,Conveyance_Employee_Category_Band__c,Incurred_By_Heroku_User__c) values ($1,$2,$3,$4,$5)',[taskname,proj,department,empCategory,incurredBy])
     .then((expenseInsertResult) => {     
              console.log('expenseInsertResult.rows '+JSON.stringify(expenseInsertResult.rows));
-             response.send('Success');
+             response.send('Successfully Inserted');
     })
     .catch((expenseInsertError) => {
          console.log('expenseInsertError   '+expenseInsertError.stack);

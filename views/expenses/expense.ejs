@@ -295,6 +295,8 @@
             </button>
           </div>
           <div class="modal-body">
+            <div class="">
+              <div id="errorMessages"></div>
             <form  id="taskForm" class="needs-validation" novalidate >
   
               <div class="form-group">  
@@ -349,6 +351,7 @@
               </div>
   
             </form>
+            </div>
           </div>
         </div>
       </div>
@@ -726,6 +729,15 @@
   })
   .fail((jqXHR,text,err) => {
       console.log('text  '+text + '  err '+err);
+      console.log('jqXHR '+JSON.stringify(jqXHR));
+      let errorHtml = '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+ jqXHR.responseText+
+      '<button type="button" class="close" data-dismiss="alert-success" aria-label="Close">'+
+      '<span aria-hidden="true">&times;</span>'+
+      '</button>'+
+      '</div>';
+      $('#errorMessages').empty();
+      $('#errorMessages').append(errorHtml); 
+
   })
    $('#createExpenseModal').modal('show');
         })
@@ -1602,18 +1614,15 @@ $('.printexp').on('click', function(event){
                   
                   
               })
-              .fail((xhr, status, error)=> {
-                  // alert('There occurred an error while creating expense !');
-                  console.log('xhr.responseText : '+xhr.responseText);
-                  if(xhr.responseText == 'Success')
-                  {
-                      alert('Expense Created Successfully !');
-                      $('#createExpenseModal').modal('hide');
-                  }
-                  else if(xhr.responseText == 'Error')
-                  {
-                      alert('There occurred an error while creating expense !');
-                  }
+              .fail((jqXHR, status, error)=> {
+                console.log('jqXHR '+JSON.stringify(jqXHR));
+      let errorHtml = '<div class="alert alert-danger alert-dismissible fade show" role="alert">'+ jqXHR.responseText+
+      '<button type="button" class="close" data-dismiss="alert-success" aria-label="Close">'+
+      '<span aria-hidden="true">&times;</span>'+
+      '</button>'+
+      '</div>';
+      $('#errorMessages').empty();
+      $('#errorMessages').append(errorHtml); 
               })
           })
 

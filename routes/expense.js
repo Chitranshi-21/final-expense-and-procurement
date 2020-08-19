@@ -1269,11 +1269,12 @@ router.get('/getconveyancelist' ,verify,(request,response) => {
       conveyanceQueryResult.rows.forEach((eachRecord) => {
         let obj = {};
         let createdDate = new Date(eachRecord.createddate);
-        let strDate = createdDate.toLocaleString();
+     //   let strDate = createdDate.toLocaleString();
         obj.sequence = i;
         obj.name = '<a href="#" class="conveyanceTag" id="'+eachRecord.sfid+'" >'+eachRecord.name+'</a>';
         obj.TravellingPurpose = eachRecord.purpose_of_travel__c;
-        obj.createDdate = strDate;
+     //  obj.createDdate = strDate;
+        obj.createDdate = eachRecord.createddate;
         obj.modeOfTravel = eachRecord.mode_of_conveyance__c;
         
 
